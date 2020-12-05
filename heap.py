@@ -48,21 +48,34 @@ class MinHeap:
     def insert(self, v):
         '''Insert v in self. Maintain heap property.'''
         
-        pass
+        self._data.append(v)
+        if len(self._data) == 1: return
+        self._percolate_up(len(self._data)-1)
     
     
     def extract_min(self):
         '''Remove minimal value in self. Restore heap property.
         Raise EmptyHeapException if heap is empty.'''
         
-        pass
+        if len(self._data) == 0: raise EmptyHeapException()
+        result = self._data[0]
+        if len(self._data) == 1: 
+            self._data = []
+            return result
+        
+        self._data[0] = self._data[-1]
+        del self._data[-1]
+        self._percolate_down(0)
+        return result
     
-    
-    def _percolate_up(self):
+    def _percolate_up(self, i):
         '''Restore heap property of self after 
         adding new item'''
         
-        pass
+        p = parent(i)
+        if self._data[i] < self._data[p]: self._swap(p,i)
+        
+        if p != 0: self._percolate_up(p)
     
     
     def _percolate_down(self, i):
@@ -72,13 +85,29 @@ class MinHeap:
         
         # while larger than at least one child
         # swap with smaller child and repeat    
-        pass
-    
+        if left(i) < len(self._data): 
+            self._percolate_down(left(i))
+            if self._data[i] > self._data[left(i)]: self._swap(i, left(i))
+        if right(i) < len(self._data): 
+            self._percolate_down(right(i))
+            if self._data[i] > self._data[right(i)]: self._swap(i, right(i))
+
     
     def _min_heapify(self):
         '''Turn unordered list into min-heap.'''
         
         # for each node in the first half of the list
         # percolate down
-        pass
+        half = len(self._data)//2 -1
+        for i in range(half, -1, -1):
+            self._percolate_down(i)
+
     
+    def _swap(self, a, b):
+        temp = self._data[a]
+        self._data[a] = self._data[b]
+        self._data[b] = temp
+
+class EmptyHeapException(Exception):
+    def __init__(self):
+        super().__init__("Heap is empty")
